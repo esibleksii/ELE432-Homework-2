@@ -1,10 +1,9 @@
 // controller.sv
-// ELE432 HW2 - Multicycle RISC-V Processor Controller
 // I built this controller for the multicycle RISC-V processor.
 // It has three sub-modules inside:
-//   mainsm   : the main FSM with 11 states
-//   aludec   : figures out what operation the ALU should do
-//   instrdec : figures out the immediate type from the opcode
+//   - mainsm   : the main FSM with 11 states
+//   - aludec   : figures out what operation the ALU should do
+//   - instrdec : figures out the immediate type from the opcode
 
 module controller(
   input  logic        clk, reset,
@@ -48,7 +47,7 @@ module controller(
   );
 endmodule
 
-// Main FSM  Moore machine with 11 states
+// Main FSM: Moore machine with 11 states
 // I set all don't-care outputs to 0 so the testbench gives deterministic results
 module mainsm(
   input  logic        clk, reset,
@@ -74,12 +73,12 @@ module mainsm(
 
   statetype state, nextstate;
 
-  // state register - resets to Fetch on reset
+  // state register resets to Fetch on reset
   always_ff @(posedge clk, posedge reset)
     if (reset) state <= S0_FETCH;
     else       state <= nextstate;
 
-  // next state logic, I look at the opcode to decide where to go after Decode
+  // next state logic p.s. I look at the opcode to decide where to go after Decode
   always_comb
     case (state)
       S0_FETCH:   nextstate = S1_DECODE;
@@ -109,7 +108,7 @@ module mainsm(
       default:     nextstate = S0_FETCH;
     endcase
 
-  // output logic - I set all signals to 0 first, then override for each state
+  // output logic p.s. I set all signals to 0 first, then override for each state
   always_comb begin
     // I set everything to 0 by default so don't-care signals are always 0
     alusrca  = 2'b00;
@@ -235,7 +234,7 @@ module aludec(
           3'b010: alucontrol = 3'b111; // slt, slti
           3'b110: alucontrol = 3'b001; // or, ori
           3'b111: alucontrol = 3'b000; // and, andi
-          default: alucontrol = 3'bxxx;
+          default: alucontrol = 3'b000; // set to 0 for don't care
         endcase
     endcase
 endmodule
@@ -249,12 +248,12 @@ module instrdec(
 );
   always_comb
     case (op)
-      7'b0110011: immsrc = 2'bxx; // R-type  (no immediate)
+      7'b0110011: immsrc = 2'b00; // R-type (no immediate, set to 0)
       7'b0010011: immsrc = 2'b00; // I-type ALU
       7'b0000011: immsrc = 2'b00; // lw
       7'b0100011: immsrc = 2'b01; // sw
       7'b1100011: immsrc = 2'b10; // beq
       7'b1101111: immsrc = 2'b11; // jal
-      default:    immsrc = 2'bxx;
+      default:    immsrc = 2'b00; // default to 0
     endcase
 endmodule
