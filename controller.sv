@@ -1,11 +1,10 @@
 // controller.sv
 // ELE432 HW2 - Multicycle RISC-V Processor Controller
-//
 // I built this controller for the multicycle RISC-V processor.
 // It has three sub-modules inside:
-//   - mainsm   : the main FSM with 11 states
-//   - aludec   : figures out what operation the ALU should do
-//   - instrdec : figures out the immediate type from the opcode
+//   mainsm   : the main FSM with 11 states
+//   aludec   : figures out what operation the ALU should do
+//   instrdec : figures out the immediate type from the opcode
 
 module controller(
   input  logic        clk, reset,
@@ -49,7 +48,7 @@ module controller(
   );
 endmodule
 
-// Main FSM - Moore machine with 11 states
+// Main FSM  Moore machine with 11 states
 // I set all don't-care outputs to 0 so the testbench gives deterministic results
 module mainsm(
   input  logic        clk, reset,
@@ -80,7 +79,7 @@ module mainsm(
     if (reset) state <= S0_FETCH;
     else       state <= nextstate;
 
-  // next state logic - I look at the opcode to decide where to go after Decode
+  // next state logic, I look at the opcode to decide where to go after Decode
   always_comb
     case (state)
       S0_FETCH:   nextstate = S1_DECODE;
